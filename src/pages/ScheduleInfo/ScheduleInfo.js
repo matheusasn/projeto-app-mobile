@@ -105,8 +105,10 @@ export default function ScheduleInfo() {
               {
                 data && data.length > 0 && data.status !== 2 ?
                   data.map((item, index) => (
-                    <View style={styles.descriptionInfoLocal} key={index}>
-                      {/* conteúdo do elemento */}
+                    <View style={styles.descriptionInfoLocal}>
+                      <Text style={styles.textOption}>Data: <Text style={styles.captionUser}>{data[0].dataAgendamento}</Text></Text>
+                      <Text style={styles.textOption}>Turno: <Text style={styles.captionUser}>{data[0].horarioAgendamento}</Text></Text>
+                      <Text style={styles.textOption}>Local: <Text style={styles.captionUser}>{data[0].nomeUnidade}</Text></Text>
                     </View>
                   ))
                 :
