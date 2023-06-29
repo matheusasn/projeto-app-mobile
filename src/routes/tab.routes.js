@@ -7,9 +7,12 @@ import HealthUnit from "../pages/HealthUnit/HealthUnit";
 import Profile from "../pages/Profile/Profile";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View} from 'react-native';
+import { Text } from "react-native";
+import { useContext } from 'react';
 
 import { createStackNavigator } from "@react-navigation/stack";
 import ScheduleInfo from "../pages/ScheduleInfo/ScheduleInfo";
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -44,15 +47,47 @@ export default function Routes() {
                 options={{ 
                     headerShown: false, 
                     tabBarIcon: ({color, size, focused}) => {
-                        if(focused){
-                            return <Ionicons name="home" size={size} color='#179ee8'/>
+                        if (focused) {
+                            return (
+                              <>
+                                <Ionicons name="home" size={22} color='#179ee8' />
+                                <Text style={{ color: '#179ee8', fontWeight: 700, fontSize: 12 }}>Home</Text>
+                              </>
+                            );
                         }
-
-                        return <Ionicons name="home-outline" size={size} color='#179ee8'/>
-                    } 
+                        return (
+                        <>
+                            <Ionicons name="home-outline" size={22} color='#179ee8' />
+                            <Text style={{ color: '#179ee8', fontSize: 12 }}>Home</Text>
+                        </>
+                        );
+                        }
                     }}>
                     
                 </Tab.Screen>
+
+                <Tab.Screen 
+                name="ScheduleStack" 
+                component={ScheduleStack}
+                options={{
+                    headerShown: false, 
+                    tabBarIcon: ({color, size, focused}) => {
+                        if (focused) {
+                            return (
+                                <>
+                                <Ionicons name="ios-calendar" size={22} color='#179ee8'/>
+                                <Text style={{ color: '#179ee8', fontWeight: 700, fontSize: 12 }}>Agendamento</Text>
+                                </>
+                            );
+                        }
+                        return (
+                        <>
+                            <Ionicons name="ios-calendar-outline" size={22} color='#179ee8'/>
+                            <Text style={{ color: '#179ee8', fontSize: 12 }}>Agendamento</Text>
+                        </>
+                        );
+                    }}}
+                ></Tab.Screen>
 
                 <Tab.Screen 
                 name="ExamResults" 
@@ -60,26 +95,23 @@ export default function Routes() {
                 options={{ 
                     headerShown: false, 
                     tabBarIcon: ({color, size, focused}) => {
-                        if(focused){
-                            return <MaterialCommunityIcons name="clipboard-file" size={size} color="#179ee8" />
+                        if (focused) {
+                            return (
+                              <>
+                                <MaterialCommunityIcons name="clipboard-file" size={22} color="#179ee8" />
+                                <Text style={{ color: '#179ee8', fontWeight: 700, fontSize: 12 }}>Exames</Text>
+                              </>
+                            );
                         }
-
-                        return <MaterialCommunityIcons name="clipboard-file-outline" size={size} color="#179ee8" />
+                        return (
+                        <>
+                            <MaterialCommunityIcons name="clipboard-file-outline" size={22} color="#179ee8" />
+                            <Text style={{ color: '#179ee8', fontSize: 12 }}>Exames</Text>
+                        </>
+                        );
                     }
                     }}
                 ></Tab.Screen>
-
-            <Tab.Screen 
-            name="ScheduleStack" 
-            component={ScheduleStack} 
-            options={{
-                headerShown: false, 
-                tabBarIcon: ({color, size, focused}) => {
-                    if(focused){
-                        return <Ionicons name="ios-calendar" size={size} color='#179ee8'/>
-                    }
-                    }}}
-            ></Tab.Screen>
 
                 <Tab.Screen 
                 name="HealthUnit" 
@@ -87,13 +119,62 @@ export default function Routes() {
                 options={{ 
                     headerShown: false, 
                     tabBarIcon: ({color, size, focused}) => {
-                        if(focused){
-                            return <MaterialCommunityIcons name="hospital-box" size={size} color="#179ee8" />
-                        } 
-                        
-                        return <MaterialCommunityIcons name="hospital-box-outline" size={size} color='#179ee8'/>
+                    //   const { notificationCount } = useContext(10);
+
+                    if (focused) {
+                        return (
+                        <>
+                            <View style={{width: 24, height: 24, justifyContent: 'center', alignItems: 'center'}}>
+                            <Ionicons name="notifications" size={size} color="#179ee8" />
+                            {10 > 0 && 
+                                <View style={{ 
+                                    position: 'absolute',
+                                    right: -6,
+                                    top: -3,
+                                    backgroundColor: '#FFA500',
+                                    borderRadius: 6,
+                                    width: 12,
+                                    height: 12,
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}>
+                                <Text style={{ color: 'white', fontSize: 7, fontWeight: 'bold' }}>
+                                    8
+                                </Text>
+                                </View>
+                            }
+                            </View>
+                            <Text style={{ color: '#179ee8', fontWeight: 700, fontSize: 12 }}>Notificações</Text>
+                        </>
+                        );
+                    }
+                    return (
+                        <>
+                        <View style={{width: 24, height: 24, justifyContent: 'center', alignItems: 'center'}}>
+                            <Ionicons name="notifications-outline" size={size} color="#179ee8" />
+                            {10 > 0 && 
+                            <View style={{ 
+                                position: 'absolute',
+                                right: -6,
+                                top: -3,
+                                backgroundColor: '#FFA500',
+                                borderRadius: 6,
+                                width: 12,
+                                height: 12,
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <Text style={{ color: 'white', fontSize: 7, fontWeight: 'bold' }}>
+                                8
+                                </Text>
+                            </View>
+                            }
+                        </View>
+                        <Text style={{ color: '#179ee8', fontSize: 12 }}>Notificações</Text>
+                        </>
+                    );
                     } 
-                    }}
+                }}
                 ></Tab.Screen>
 
                 <Tab.Screen 
@@ -102,11 +183,20 @@ export default function Routes() {
                 options={{ 
                     headerShown: false, 
                     tabBarIcon: ({color, size, focused}) => {
-                        if(focused){
-                            return <Ionicons name="person" size={size} color='#179ee8'/>
+                        if (focused) {
+                            return (
+                              <>
+                                <Ionicons name="person" size={22} color='#179ee8'/>
+                                <Text style={{ color: '#179ee8', fontWeight: 700, fontSize: 12 }}>Perfil</Text>
+                              </>
+                            );
                         }
-
-                        return <Ionicons name="person-outline" size={size} color='#179ee8'/>
+                        return (
+                        <>
+                            <Ionicons name="person-outline" size={22} color='#179ee8'/>
+                            <Text style={{ color: '#179ee8', fontSize: 12 }}>Perfil</Text>
+                        </>
+                        );
                     } 
                     }}
                 ></Tab.Screen>
