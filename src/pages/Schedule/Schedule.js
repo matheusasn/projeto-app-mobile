@@ -1,31 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 import { useNavigation } from '@react-navigation/native';
 import { loadUserInfo } from '../../libs/storage';
 import { Load } from '../../components/Load';
+import api from '../../services/api';
 
 export default function Schedule() {
 
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(true)
-  const [info, setInfo] = useState({})
+  const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState({});
+  const [data, setData] = useState({});
+  const [preceduresData, setPreceduresData] = useState({});
+  const [examsData, setExamsData] = useState({});
 
+  useEffect( () => {
+    async function loadStoragedData() {
+      const userInfo = await loadUserInfo();
+      setInfo(userInfo);
+      setLoading(false);
+    }
+     loadStoragedData();
+  }, []);
 
   useEffect(() => {
-    async function loadStoragedData() {
-        const userInfo = await loadUserInfo()
-        setInfo(userInfo)
-        setLoading(false)
+    async function handleGetSchedules() {
+      const { data } = await api.get(`getAgendamento?idPaciente=${info.idPaciente}`);
+      setData(data);
+      setLoading(false);
     }
-    loadStoragedData()
-  })
+    if (info.idPaciente) {
+      handleGetSchedules();
+    }
+  }, [info]);
 
-  if(loading)
-        return <Load />
+  // if(data && data.length > 0 && data.status !== 2) {
+  //   setPreceduresData(data.filter(item => item.tipo === 2));
+  //   setExamsData(data.filter(item => item.tipo === 1));
+  // }
 
+  if (loading) {
+    return <Load />;
+  }
   return (
     <Animatable.View style={styles.container} animation="fadeInUp">
       <View style={styles.containerUser}>
@@ -42,49 +61,84 @@ export default function Schedule() {
         <View>
           <Text style={styles.captionUser}>Paciente</Text>  
         </View>
-      </View>
-      <View style={styles.containerMain}>
         <View style={styles.contentUser}>
           <Text style={styles.titleUser}>Meus Agendamentos</Text>  
         </View>
+      </View>
+      <ScrollView style={styles.containerMain}>
         <View style={styles.containerProcedures}>
           <Text style={styles.textProcedures}>Procedimentos</Text>
-          <View style={styles.contentProcedures}>
-            <View>
-              <TouchableOpacity
-                style={styles.buttonProcedures}
-                onPress={() => navigation.navigate('ScheduleInfo')}>
-                <Text style={styles.buttonText}>Clínico Geral</Text>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <TouchableOpacity
-                style={styles.buttonProcedures}
-                onPress={() => navigation.navigate('')}>
-                <Text style={styles.buttonText}>Ortopedia</Text>
-              </TouchableOpacity>
-            </View>
+          <View>
+            {data && data.length > 0 && data.status !== 2 ? (
+              data.map(item => {
+                if (item.tipo === 2) {
+                  return (
+                    <View key={item.id}>
+                      <TouchableOpacity
+                        style={styles.buttonProcedures}
+                        onPress={() =>
+                          navigation.navigate('ScheduleInfo', {
+                            id: item.procedimento,
+                            type: 'procedures',
+                            description: item.descricao,
+                          })
+                        }
+                      >
+                        <Text style={styles.buttonText}>{item.descricao}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }
+              })
+            ) : (
+              <View key="no-procedures">
+                <Text>NÃO EXISTEM CONSULTAS MARCADAS NO MOMENTO.</Text>
+              </View>
+            )}
           </View>
+
         </View>
         <View style={styles.containerExams}>
           <Text style={styles.textExams}>Exames</Text>
-          <View style={styles.contentExams}>
-            <View>
-              <TouchableOpacity
-                style={styles.buttonExams}
-                onPress={() => navigation.navigate('')}>
-                <Text style={styles.buttonText}>Raio-X</Text>
-              </TouchableOpacity>
-            </View>
+          <View>
+            {data && data.length > 0 && data.status !== 2 ? (
+              data.map(item => {
+                if (item.tipo === 1) {
+                  return (
+                    <View key={item.id}>
+                      <TouchableOpacity
+                        style={styles.buttonExams}
+                        onPress={() =>
+                          navigation.navigate('ScheduleInfo', {
+                            id: item.procedimento,
+                            type: 'exams',
+                            description: item.descricao,
+                          })
+                        }
+                      >
+                        <Text style={styles.buttonText}>{item.descricao}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }
+              })
+            ) : (
+              <View key="no-exams" style={styles.contentExams}>
+                <Text>NÃO EXISTEM EXAMES MARCADOS NO MOMENTO.</Text>
+              </View>
+            )}
           </View>
+
         </View>
-        <View style={styles.containerAttention}>
+      </ScrollView>
+
+      <View style={styles.containerAttention}>
+        <View style={styles.contentAttention}>
           <Text style={styles.textPersonalAttention}>ATENÇÃO</Text>
-          <Text style={styles.textAttention}>A marcação de consultas e exames deve ser feito presencialmente e está sujeito a disponibilidade de vagas. aaasdasdasd asdasdasd asdasdasd asdasdasd asdasdasd adasdasd asdasdasd asdasd aaasdasdasd asdasdasd asdasdasd asdasdasd asdasdasd adasdasd asdasdasd asdasd aaasdasdasd asdasdasd asdasdasd asdasdasd asdasdasd adasdasd asdasdasd asdasd aaasdasdasd asdasdasd asdasdasd asdasdasd asdasdasd adasdasd asdasdasd asdasd</Text>
+          <Text style={styles.textAttention}>A marcação de consultas e exames deve ser feito presencialmente e está sujeito a disponibilidade de vagas.</Text>
         </View>
       </View>
     </Animatable.View>
-
   )
 }
 
@@ -123,12 +177,18 @@ const styles = StyleSheet.create({
   containerProcedures: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 20,
+    marginTop: 20,
+    marginBottom: 20
+  },
+
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   contentProcedures: {
-    minHeight: 140
+    maxHeight: 140
   },
 
   textProcedures: {
@@ -142,7 +202,7 @@ const styles = StyleSheet.create({
   containerExams: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 0,
     marginBottom: 20,
   },
 
@@ -159,6 +219,12 @@ const styles = StyleSheet.create({
   },
 
   containerAttention: {
+    margin: '6%',
+    marginTop: 0,
+    paddingTop: 0
+  },
+
+  contentAttention: {
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -173,12 +239,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 300,
     color: '#666666',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   buttonProcedures: {
     backgroundColor: '#00B0F3',
-    width: 364,
+    width: 320,
     height: 72,
     borderRadius: 5,
     alignItems: 'center',
@@ -189,7 +256,7 @@ const styles = StyleSheet.create({
 
   buttonExams: {
     backgroundColor: '#DE0788',
-    width: 364,
+    width: 320,
     height: 72,
     borderRadius: 5,
     alignItems: 'center',
@@ -205,3 +272,5 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
+
+
