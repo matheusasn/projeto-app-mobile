@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import { saveUserInfo } from '../../libs/storage';
 import { Load } from '../../components/Load';
-import { TextInputMask } from 'react-native-masked-text';
+// import { TextInputMask } from 'react-native-masked-text';
 import { CommonActions } from '@react-navigation/native';
 
 export default function SignIn() {
@@ -70,17 +70,17 @@ export default function SignIn() {
 
       <Animatable.View style={styles.containerForm} animation="fadeInUp">
         <Text style={styles.title}>CPF</Text>
-        <TextInputMask
+        {/* <TextInputMask
           type="cpf"
           placeholder="Digite seu CPF"
           style={styles.input}
           value={cpf}
           keyboardType="numeric"
           onChangeText={(formatted, extracted) => setCPF(formatted)}
-        />
+        /> */}
 
         <Text style={styles.title}>CNS</Text>
-        <TextInputMask
+        {/* <TextInputMask
           type="custom"
           options={{
             mask: '999 9999 9999 9999',
@@ -90,7 +90,7 @@ export default function SignIn() {
           value={cns}
           keyboardType="numeric"
           onChangeText={(formatted, extracted) => setCNS(formatted)}
-        />
+        /> */}
 
         <TouchableOpacity style={styles.button} disabled={loading} onPress={handleLogin}>
           <Text style={styles.buttonText}>{loading ? <Load /> : 'Entrar'}</Text>
